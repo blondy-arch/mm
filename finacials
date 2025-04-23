@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Financial Trends - MagnateMate</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Financial Trends</h1>
+    <h2>Top Cryptocurrencies</h2>
+    <ul>
+        {% for crypto in crypto_data %}
+            <li>{{ crypto.name }}: ${{ crypto.current_price }} (24h: {{ crypto.price_change_percentage_24h }}%)</li>
+        {% endfor %}
+    </ul>
+    <h2>Top Stocks</h2>
+    <ul>
+        {% for stock in stock_data %}
+            <li>{{ stock.symbol }}: ${{ stock.price }} (Change: {{ stock.change }}%)</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
