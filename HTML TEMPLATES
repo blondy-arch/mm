@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MagnateMate</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to MagnateMate</h1>
+    <p>Your personal assistant to becoming a millionaire magnate!</p>
+    <ul>
+        <li><a href="/tasks">Manage Tasks</a></li>
+        <li><a href="/ideas">Generate Business Ideas</a></li>
+        <li><a href="/financials">Financial Trends</a></li>
+    </ul>
+</body>
+</html>
