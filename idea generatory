@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ideas - MagnateMate</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Business Idea Generator</h1>
+    <form method="POST">
+        <input type="text" name="interest" placeholder="Your Interest (e.g., tech, marketing)" required>
+        <button type="submit">Generate Idea</button>
+    </form>
+    <h2>Your Ideas</h2>
+    <ul>
+        {% for idea in ideas %}
+            <li>{{ idea[1] }}: {{ idea[2] }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
