@@ -1,0 +1,73 @@
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
+from datetime import datetime, timedelta
+import schedule
+import time
+import threading
+from data_fetcher import fetch_crypto_data, fetch_stock_data
+from database import init_db, add_task, get_tasks, add_idea, get_ideas
+
+app = Flask(__name__)
+
+# Initialize database
+init_db()
+
+# Sample business ideas based on article (Step 2.2)
+def generate_idea(user_interest):
+    ideas = {
+        "e-commerce": "Start a dropshipping store with eco-friendly products using Shopify ($14.90/month trial).",
+        "tech": "Build a no-code SaaS app (e.g., budget tracker) using Bubble (~$30/month).",
+        "marketing": "Offer social media management on Upwork ($0 startup cost)."
+    }
+    return ideas.get(user_interest.lower(), "Research trending niches on X and start a micro-business.")
+
+# Reminder scheduler
+def send_reminder():
+    tasks = get_tasks()
+    for task in tasks:
+        due_date = datetime.strptime(task[3], '%Y-%m-%d')
+        if due_date.date() == datetime.today().date():
+            print(f"Reminder: Task '{task[1]}' is due today!")  # Replace with Twilio SMS
+
+def run_scheduler():
+    schedule.every().day.at("08:00").do(send_reminder)
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
+
+# Start scheduler in a separate thread
+threading.Thread(target=run_scheduler, daemon=True).start()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/tasks', methods=['GET', 'POST'])
+def tasks():
+    if request.method == 'POST':
+        task_name = request.form['task_name']
+        description = request.form['description']
+        due_date = request.form['due_date']
+        add_task(task_name, description, due_date)
+        return redirect(url_for('tasks'))
+    tasks = get_tasks()
+    return render_template('tasks.html', tasks=tasks)
+
+@app.route('/ideas', methods=['GET', 'POST'])
+def ideas():
+    if request.method == 'POST':
+        interest = request.form['interest']
+        idea = generate_idea(interest)
+        add_idea(interest, idea)
+        return redirect(url_for('ideas'))
+    ideas = get_ideas()
+    return render_template('ideas.html', ideas=ideas)
+
+@app.route('/financials')
+def financials():
+    crypto_data = fetch_crypto_data()
+    stock_data = fetch_stock_data()
+    return render_template('financials.html', crypto_data=crypto_data, stock_data=stock_data)
+
+if __name__ == '__main__':
+    app.run(debug=True)
